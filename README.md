@@ -1,12 +1,12 @@
-# 📋 SISTEMA DE ORDEM DE SERVIÇOS
+# SISTEMA DE ORDEM DE SERVIÇOS PARA EMPRESAS
+
+![home](./imgs/home.png)
 
 Este é um sistema de gerenciamento de Ordens de Serviços (O.S.), Empresas, Clientes e Usuários, desenvolvido em **Node.js** com **Express**, **React.js** no frontend e banco de dados **PostgreSQL**. Ele permite cadastrar, listar, atualizar e deletar registros de forma segura, utilizando autenticação com **JWT**.
 
 ---
 
-## 🗂️ ESTRUTURA DO PROJETO
-
-O projeto possui a seguinte organização:
+## ESTRUTURA DO PROJETO
 
 ### Backend
 
@@ -33,7 +33,7 @@ O projeto possui a seguinte organização:
 
 ---
 
-## 🛠️ TECNOLOGIAS UTILIZADAS
+## STACK
 
 - React.js
 - Node.js
@@ -48,39 +48,40 @@ O projeto possui a seguinte organização:
 
 ---
 
-## ✅ FUNCIONALIDADES
+## FUNCIONALIDADES
 
 - **Usuários**: Cadastro de usuários, login e autenticação via JWT, atualização e exclusão de usuários.
 - **Empresas**: Cadastro, atualização, exclusão e listagem de empresas.
 - **Clientes**: Cadastro, atualização, exclusão e listagem de clientes.
 - **Ordens de Serviço**: Cadastro, atualização, exclusão e listagem de O.S, associadas a empresas e usuários.
-- **Interface Web**: Navegação intuitiva, formulários dinâmicos, listagens paginadas e feedback visual com alertas e validações.
 
 ---
 
-## 🚀 INSTALAÇÃO
-
-### 1. Clonar o repositório:
+## INSTALAÇÃO
 
 ```bash
+# Clonando o repositório
 git clone https://github.com/gabrielandradecunha/os_app
 cd os_app/os_api
+
+# Copiar o arquivo de exemplo de variáveis de ambiente
+cp .env.example .env
+
+# Gerar JWT e depois inserir no .env
+node -e "console.log(require('crypto').randomBytes(32).toString('hex'))"
+
+# Iniciando o backend com Docker
+sudo docker-compose up -d
+
+# Instalando dependências
 npm install
 
-### 2. Configurar variáveis de ambiente no arquivo .env:
-```env
-PORT=3000
-DB_USER=seu_usuario
-DB_PASSWORD=sua_senha
-DB_HOST=localhost
-DB_PORT=5432
-DB_DATABASE=nome_do_banco
-JWT_SECRET=sua_chave_secreta
-FRONTEND_URL=http://localhost:5173
+# Rodando o backend
+node src/index.js
 
-
-### 3. Iniciando front:
-```bash
+# front
 cd os_app
 npm install
 npm run dev
+
+
