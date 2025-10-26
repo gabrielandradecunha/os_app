@@ -1,78 +1,127 @@
-import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import Navbar from '../../components/Navbar/Navbar.jsx';
-import './EmpresaForm.css';
+import {
+  createUserDB,
+  deleteUserDB,
+  updateUserDB,
+  getUserByEmailDB,
+  getAllUsersDB
+} from '../model/user.model.js';
+import jwt from 'jsonwebtoken';
+import dotenv from 'dotenv';
+import bcrypt from 'bcrypt';
 
-export default function UsersList() {
-  const [users, setUsers] = useState([]);
-  const [mensagem, setMensagem] = useState('');
+dotenv.config();
 
-  const token = localStorage.getItem('token');
+export async function createUser(req, res) {
+  try {
+    const { nome, email, senha } = req.body;
 
-  const fetchUsers = async () => {
-    try {
-      const response = await axios.get('http://localhost:3000/users', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setUsers(response.data);
-    } catch (err) {
-      console.error('Erro ao buscar usuários:', err);
-      setMensagem('Erro ao buscar usuários.');
+    if (!nome || !email || !senha) {
+      return res.status(400).json({ error: 'Todos os campos são obrigatórios.' });
     }
-  };
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const handleDelete = async (id) => {
-    if (!window.confirm('Deseja realmente deletar este usuário?')) return;
-
-    try {
-      await axios.delete(`http://localhost:3000/users/${id}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
-      setMensagem('Usuário deletado com sucesso!');
-      fetchUsers(); // Atualiza a lista
-    } catch (err) {
-      console.error('Erro ao deletar usuário:', err);
-      setMensagem('Erro ao deletar usuário.');
+    const existingUser = await getUserByEmailDB(email);
+    if (existingUser) {
+      return res.status(409).json({ error: 'Usuário já existe.' });
     }
-  };
 
-  return (
-    <div className="empresa-container">
-      <Navbar />
+    const hashedPassword = await bcrypt.hash(senha, 10);
+    const user = await createUserDB(nome, email, hashedPassword);
 
-      <h2>Usuários Cadastrados</h2>
-      {mensagem && <p className="mensagem">{mensagem}</p>}
+    res.status(201).json({ message: 'Usuário criado com sucesso.', user });
+  } catch (error) {
+    console.error('Erro ao criar usuário:', error);
+    res.status(500).json({ error: 'Erro ao criar usuário.' });
+  }
+}
 
-      {users.length === 0 ? (
-        <p>Nenhum usuário encontrado.</p>
-      ) : (
-        <table>
-          <thead>
-            <tr>
-              <th>ID</th>
-              <th>Nome</th>
-              <th>Email</th>
-              <th>Ações</th>
-            </tr>
-          </thead>
-          <tbody>
-            {users.map((user) => (
-              <tr key={user.id}>
-                <td>{user.id}</td>
-                <td>{user.nome}</td>
-                <td>{user.email}</td>
-                <td>
-                  <button onClick={() => handleDelete(user.id)}>Deletar</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      )}
-    </div>
-  );
+export async function login(req, res) {
+  try {
+    const { email, senha } = req.body;
+
+    if (!email || !senha) {
+      return res.status(400).json({ error: 'Email e senha são obrigatórios.' });
+    }
+
+    const user = await getUserByEmailDB(email);
+    if (!user) {
+      return res.status(401).json({ error: 'Credenciais inválidas.' });
+    }
+
+    const passwordMatch = await bcrypt.compare(senha, user.senha_hash);
+    if (!passwordMatch) {
+      return res.status(401).json({ error: 'Credenciais inválidas.' });
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      process.env.JWT,
+      { expiresIn: '8h' }
+    );
+
+    res.status(200).json({ message: 'Login realizado com sucesso.', token, id_user: user.id });
+  } catch (error) {
+    console.error('Erro ao realizar login:', error);
+    res.status(500).json({ error: 'Erro ao realizar login.' });
+  }
+}
+
+export async function getAllUsers(req, res) {
+  try {
+    const users = await getAllUsersDB();
+    res.status(200).json(users);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao listar usuários.' });
+  }
+}
+
+export async function getUser(req, res) {
+  try {
+    const { id } = req.params;
+    const user = await getUserByEmailDB(id);
+
+    if (!user) {
+      return res.status(404).json({ error: 'Usuário não encontrado.' });
+    }
+
+    res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao buscar usuário.' });
+  }
+}
+
+export async function updateUser(req, res) {
+  try {
+    const { id } = req.params;
+    const { nome, email, senha } = req.body;
+
+    let hashedPassword;
+    if (senha) {
+      hashedPassword = await bcrypt.hash(senha, 10);
+    }
+
+    const updatedUser = await updateUserDB(id, nome, email, hashedPassword);
+
+    if (!updatedUser) {
+      return res.status(404).json({ error: 'Usuário não encontrado.' });
+    }
+
+    res.status(200).json({ message: 'Usuário atualizado com sucesso.', updatedUser });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao atualizar usuário.' });
+  }
+}
+
+export async function deleteUser(req, res) {
+  try {
+    const { id } = req.params;
+    const deleted = await deleteUserDB(id);
+
+    if (!deleted) {
+      return res.status(404).json({ error: 'Usuário não encontrado.' });
+    }
+
+    res.status(200).json({ message: 'Usuário deletado com sucesso.' });
+  } catch (error) {
+    res.status(500).json({ error: 'Erro ao deletar usuário.' });
+  }
 }
