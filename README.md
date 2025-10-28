@@ -2,7 +2,7 @@
 
 ![home](./imgs/home.png)
 
-Este é um sistema de gerenciamento de Ordens de Serviços (O.S.), Empresas, Clientes e Usuários, desenvolvido em **Node.js** com **Express**, **React.js** no frontend e banco de dados **PostgreSQL**. Ele permite cadastrar, listar, atualizar e deletar registros de forma segura, utilizando autenticação com **JWT**.
+Este é um sistema de gerenciamento de Ordens de Serviços (O.S.), Empresas, Clientes e Usuários, desenvolvido em **Node.js** com **Express**, **React.js** no frontend e banco de dados **PostgreSQL**. 
 
 ---
 
