@@ -12,7 +12,7 @@ Este é um sistema de gerenciamento de Ordens de Serviços (O.S.), Empresas, Cli
 - Node.js
 - Express.js
 - PostgreSQL
-- Docker (opcional)
+- Docker 
 - JWT para autenticação
 - bcrypt para hash de senhas
 - Axios para requisições HTTP
