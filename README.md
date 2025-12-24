@@ -2,22 +2,19 @@
 
 ![home](./imgs/home.png)
 
-Este é um sistema de gerenciamento de Ordens de Serviços (O.S.), Empresas, Clientes e Usuários, desenvolvido em **Node.js** com **Express**, **React.js** no frontend e banco de dados **PostgreSQL**. 
+Este é um sistema de gerenciamento de Ordens de Serviços (O.S.), Empresas, Clientes e Usuários, desenvolvido em **Node.js** com **Express** escrito em **Typescript**, **React.js** no frontend e banco de dados **PostgreSQL**. 
 
 ---
 
 ## STACK
 
-- React.js
-- Node.js
-- Express.js
+- React
+- Node
+- Typescript
+- Express
 - PostgreSQL
 - Docker 
-- JWT para autenticação
-- bcrypt para hash de senhas
-- Axios para requisições HTTP
-- React Router para navegação
-- Context API para gerenciamento de estado global
+- JWT 
 
 ---
 
