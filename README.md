@@ -20,10 +20,7 @@ Este é um sistema de gerenciamento de Ordens de Serviços (O.S.), Empresas, Cli
 
 ## FUNCIONALIDADES
 
-- **Usuários**: Cadastro de usuários, login e autenticação via JWT, atualização e exclusão de usuários.
-- **Empresas**: Cadastro, atualização, exclusão e listagem de empresas.
-- **Clientes**: Cadastro, atualização, exclusão e listagem de clientes.
-- **Ordens de Serviço**: Cadastro, atualização, exclusão e listagem de O.S, associadas a empresas e usuários.
+Sistema com autenticação JWT que permite gerenciar usuários, empresas, clientes e ordens de serviço, incluindo cadastro, atualização, exclusão e listagem, com O.S. vinculadas a empresas e usuários.
 
 ---
 
