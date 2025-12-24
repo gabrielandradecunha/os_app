@@ -1,6 +1,6 @@
 import express from 'express';
-import { createOS, deleteOS, updateOS, getOSById, getAllOS } from '../controller/os.controller.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { createOS, deleteOS, updateOS, getOSById, getAllOS } from '../controller/os.controller';
+import { authMiddleware } from '../middleware/auth';
 
 const router = express.Router();
 

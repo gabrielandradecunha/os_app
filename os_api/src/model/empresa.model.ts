@@ -1,4 +1,4 @@
-import { pool } from './db.js';
+import { pool } from './db';
 
 export const createEmpresaDB = async ({nome,cnpj=null,id_user=null,telefone=null,email=null,endereco=null}) => {
   const query = `INSERT INTO empresa (nome,cnpj,id_user,telefone,email,endereco) VALUES ($1,$2,$3,$4,$5,$6) RETURNING *`;

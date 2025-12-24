@@ -1,4 +1,4 @@
-import { createClienteDB, deleteClienteDB, updateClienteDB, getClienteByIdDB, getAllClientesDB } from '../model/cliente.model.js';
+import { createClienteDB, deleteClienteDB, updateClienteDB, getClienteByIdDB, getAllClientesDB } from '../model/cliente.model';
 
 export async function createCliente(req, res) {
   try {

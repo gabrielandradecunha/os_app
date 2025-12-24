@@ -1,4 +1,4 @@
-import { pool } from './db.js';
+import { pool } from './db';
 import bcrypt from "bcrypt";
 
 export async function createUserDB(nome, email, senha) {
