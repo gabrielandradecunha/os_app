@@ -1,4 +1,4 @@
-import { createEmpresaDB, deleteEmpresaDB, updateEmpresaDB, getEmpresaByIdDB, getAllEmpresasDB } from '../model/empresa.model.js';
+import { createEmpresaDB, deleteEmpresaDB, updateEmpresaDB, getEmpresaByIdDB, getAllEmpresasDB } from '../model/empresa.model';
 
 export async function createEmpresa(req, res) {
   try {

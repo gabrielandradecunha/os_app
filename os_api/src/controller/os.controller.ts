@@ -1,4 +1,4 @@
-import { createOSDB, deleteOSDB, updateOSDB, getOSByIdDB, getAllOSDB } from '../model/os.model.js';
+import { createOSDB, deleteOSDB, updateOSDB, getOSByIdDB, getAllOSDB } from '../model/os.model';
 
 export async function createOS(req, res) {
   try {

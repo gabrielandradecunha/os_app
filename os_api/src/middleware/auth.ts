@@ -22,6 +22,6 @@ export function authMiddleware(req, res, next) {
     next();
   } catch (err) {
     console.error('Erro de autenticação:', err.message);
-    return res.status(403).json({ error: 'Token inválido ou expirado' });
+    return res.status(403).json({ error: 'Token inválido' });
   }
 }

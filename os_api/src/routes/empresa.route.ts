@@ -1,6 +1,6 @@
 import express from 'express';
-import { createEmpresa, deleteEmpresa, updateEmpresa, getEmpresaById, getAllEmpresas } from '../controller/empresa.controller.js';
-import { authMiddleware } from '../middleware/auth.js';
+import { createEmpresa, deleteEmpresa, updateEmpresa, getEmpresaById, getAllEmpresas } from '../controller/empresa.controller';
+import { authMiddleware } from '../middleware/auth';
 
 const router = express.Router();
 

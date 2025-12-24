@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Navbar from '../../components/Navbar/Navbar.jsx';
+import Navbar from '../../components/Navbar/Navbar.js';
 import './ClienteForm.css';
 
 export default function ClienteForm() {

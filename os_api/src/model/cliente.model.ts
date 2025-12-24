@@ -1,4 +1,4 @@
-import { pool } from './db.js';
+import { pool } from './db';
 
 export const createClienteDB = async ({nome,email=null,telefone=null,endereco=null,id_empresa=null}) => {
   const query = `INSERT INTO cliente (nome,email,telefone,endereco,id_empresa) VALUES ($1,$2,$3,$4,$5) RETURNING *`;

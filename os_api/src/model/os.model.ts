@@ -1,4 +1,4 @@
-import { pool } from './db.js';
+import { pool } from './db';
 
 export const createOSDB = async ({numero,nome,tipo_produto,defeito,complemento,status=false,descricao,valor,id_cliente,id_tecnico=null,id_empresa=null,data_conclusao=null}) => {
   const query = `INSERT INTO os (numero,nome,tipo_produto,defeito,complemento,status,descricao,valor,id_cliente,id_tecnico,id_empresa,data_conclusao) VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12) RETURNING *`;

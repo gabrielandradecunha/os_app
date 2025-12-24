@@ -4,7 +4,7 @@ import {
   updateUserDB,
   getUserByEmailDB,
   getAllUsersDB
-} from '../model/user.model.js';
+} from '../model/user.model';
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 import bcrypt from 'bcrypt';
