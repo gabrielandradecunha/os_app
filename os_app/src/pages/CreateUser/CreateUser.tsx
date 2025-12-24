@@ -1,17 +1,21 @@
-import React, { useState } from 'react';
-import axios from 'axios';
-import Navbar from '../../components/Navbar/Navbar.jsx';
+import React, { useState, FormEvent, ChangeEvent } from 'react';
+import axios, { AxiosError } from 'axios';
+import Navbar from '../../components/Navbar/Navbar';
+
+interface ErrorResponse {
+  error?: string;
+}
 
 export default function CreateUser() {
-  const [nome, setNome] = useState('');
-  const [email, setEmail] = useState('');
-  const [senha, setSenha] = useState('');
-  const [erro, setErro] = useState('');
-  const [sucesso, setSucesso] = useState('');
+  const [nome, setNome] = useState<string>('');
+  const [email, setEmail] = useState<string>('');
+  const [senha, setSenha] = useState<string>('');
+  const [erro, setErro] = useState<string>('');
+  const [sucesso, setSucesso] = useState<string>('');
 
   const token = localStorage.getItem('token');
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setErro('');
     setSucesso('');
@@ -22,28 +26,24 @@ export default function CreateUser() {
         { nome, email, senha },
         { headers: { Authorization: `Bearer ${token}` } }
       );
+
       setSucesso('Usuário criado com sucesso!');
       setNome('');
       setEmail('');
       setSenha('');
     } catch (err) {
-      console.error('Erro ao criar usuário:', err);
-      setErro(err.response?.data.error || 'Erro ao criar usuário.');
+      const error = err as AxiosError<ErrorResponse>;
+      setErro(error.response?.data?.error ?? 'Erro ao criar usuário.');
     }
   };
 
   return (
     <div>
       <Navbar />
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          paddingTop: '50px',
-        }}
-      >
+      <div style={{ display: 'flex', justifyContent: 'center', paddingTop: '50px' }}>
         <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
           <h1>Criar Usuário</h1>
+
           {erro && <p style={{ color: 'red' }}>{erro}</p>}
           {sucesso && <p style={{ color: 'green' }}>{sucesso}</p>}
 
@@ -55,26 +55,29 @@ export default function CreateUser() {
               type="text"
               placeholder="Nome"
               value={nome}
-              onChange={(e) => setNome(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setNome(e.target.value)}
               required
               style={{ marginBottom: '10px', padding: '8px' }}
             />
+
             <input
               type="email"
               placeholder="Email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
               required
               style={{ marginBottom: '10px', padding: '8px' }}
             />
+
             <input
               type="password"
               placeholder="Senha"
               value={senha}
-              onChange={(e) => setSenha(e.target.value)}
+              onChange={(e: ChangeEvent<HTMLInputElement>) => setSenha(e.target.value)}
               required
               style={{ marginBottom: '10px', padding: '8px' }}
             />
+
             <button
               type="submit"
               style={{
@@ -83,7 +86,7 @@ export default function CreateUser() {
                 color: 'white',
                 border: 'none',
                 borderRadius: '4px',
-                cursor: 'pointer',
+                cursor: 'pointer'
               }}
             >
               Criar

@@ -1,37 +1,50 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import Navbar from '../../components/Navbar/Navbar.jsx';
+import Navbar from '../../components/Navbar/Navbar';
 import './Home.css';
 
+interface Usuario {
+  id: number;
+  nome: string;
+  email: string;
+}
+
+interface OrdemServico {
+  id: number;
+  numero: string;
+  nome: string;
+  tipo_produto: string;
+  defeito: string;
+  descricao: string;
+  valor: number;
+  status: boolean;
+}
+
 export default function Home() {
-  const [usuarios, setUsuarios] = useState([]);
-  const [ordens, setOrdens] = useState([]);
-  const [erro, setErro] = useState('');
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
+  const [ordens, setOrdens] = useState<OrdemServico[]>([]);
+  const [erro, setErro] = useState<string>('');
 
   const token = localStorage.getItem('token');
 
-  // Buscar usuários
-  const fetchUsuarios = async () => {
+  const fetchUsuarios = async (): Promise<void> => {
     try {
-      const response = await axios.get('http://localhost:3000/users', {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axios.get<Usuario[]>('http://localhost:3000/users', {
+        headers: { Authorization: `Bearer ${token}` }
       });
       setUsuarios(response.data);
-    } catch (err) {
-      console.error('Erro ao buscar usuários:', err);
+    } catch {
       setErro('Erro ao carregar usuários.');
     }
   };
 
-  // Buscar Ordens de Serviço
-  const fetchOrdens = async () => {
+  const fetchOrdens = async (): Promise<void> => {
     try {
-      const response = await axios.get('http://localhost:3000/os', {
-        headers: { Authorization: `Bearer ${token}` },
+      const response = await axios.get<OrdemServico[]>('http://localhost:3000/os', {
+        headers: { Authorization: `Bearer ${token}` }
       });
       setOrdens(response.data);
-    } catch (err) {
-      console.error('Erro ao buscar O.S.:', err);
+    } catch {
       setErro('Erro ao carregar Ordens de Serviço.');
     }
   };
@@ -41,32 +54,28 @@ export default function Home() {
     fetchOrdens();
   }, []);
 
-  // Deletar usuário
-  const handleDeleteUsuario = async (id) => {
+  const handleDeleteUsuario = async (id: number): Promise<void> => {
     if (!window.confirm('Tem certeza que deseja deletar este usuário?')) return;
 
     try {
       await axios.delete(`http://localhost:3000/users/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setUsuarios(usuarios.filter((u) => u.id !== id));
-    } catch (err) {
-      console.error('Erro ao deletar usuário:', err);
+      setUsuarios(prev => prev.filter(u => u.id !== id));
+    } catch {
       setErro('Não foi possível deletar o usuário.');
     }
   };
 
-  // Deletar O.S.
-  const handleDeleteOS = async (id) => {
+  const handleDeleteOS = async (id: number): Promise<void> => {
     if (!window.confirm('Tem certeza que deseja deletar esta O.S.?')) return;
 
     try {
       await axios.delete(`http://localhost:3000/os/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${token}` }
       });
-      setOrdens(ordens.filter((o) => o.id !== id));
-    } catch (err) {
-      console.error('Erro ao deletar O.S.:', err);
+      setOrdens(prev => prev.filter(o => o.id !== id));
+    } catch {
       setErro('Não foi possível deletar a O.S.');
     }
   };
@@ -78,7 +87,6 @@ export default function Home() {
         <h1>Bem-vindo!</h1>
         {erro && <p className="erro">{erro}</p>}
 
-        {/* Tabela de Usuários */}
         <section className="table-section">
           <h2>Usuários do Sistema</h2>
           {usuarios.length > 0 ? (
@@ -92,7 +100,7 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {usuarios.map((u) => (
+                {usuarios.map(u => (
                   <tr key={u.id}>
                     <td>{u.id}</td>
                     <td>{u.nome}</td>
@@ -111,7 +119,6 @@ export default function Home() {
           )}
         </section>
 
-        {/* Tabela de Ordens de Serviço */}
         <section className="table-section">
           <h2>Ordens de Serviço</h2>
           {ordens.length > 0 ? (
@@ -130,7 +137,7 @@ export default function Home() {
                 </tr>
               </thead>
               <tbody>
-                {ordens.map((o) => (
+                {ordens.map(o => (
                   <tr key={o.id}>
                     <td>{o.id}</td>
                     <td>{o.numero}</td>

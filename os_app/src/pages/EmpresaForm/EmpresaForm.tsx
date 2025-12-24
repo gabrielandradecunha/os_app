@@ -1,10 +1,34 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
-import Navbar from '../../components/Navbar/Navbar.jsx';
+import Navbar from '../../components/Navbar/Navbar';
 import './EmpresaForm.css';
 
+interface EmpresaFormData {
+  nome: string;
+  cnpj: string;
+  telefone: string;
+  email: string;
+  endereco: string;
+  id_user: string;
+}
+
+interface Empresa {
+  id: number;
+  nome: string;
+  cnpj?: string;
+  telefone?: string;
+  email?: string;
+  endereco?: string;
+  id_user: number;
+}
+
+interface Usuario {
+  id: number;
+  nome: string;
+}
+
 export default function EmpresaForm() {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<EmpresaFormData>({
     nome: '',
     cnpj: '',
     telefone: '',
@@ -13,35 +37,38 @@ export default function EmpresaForm() {
     id_user: ''
   });
 
-  const [mensagem, setMensagem] = useState('');
-  const [empresas, setEmpresas] = useState([]);
-  const [usuarios, setUsuarios] = useState([]);
+  const [mensagem, setMensagem] = useState<string>('');
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
+  const [usuarios, setUsuarios] = useState<Usuario[]>([]);
 
   const token = localStorage.getItem('token');
 
-  // Buscar empresas e usuários
   useEffect(() => {
-    const fetchDados = async () => {
-      try {
-        const [empresasRes, usuariosRes] = await Promise.all([
-          axios.get('http://localhost:3000/empresa', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://localhost:3000/users', { headers: { Authorization: `Bearer ${token}` } })
-        ]);
-        setEmpresas(empresasRes.data);
-        setUsuarios(usuariosRes.data);
-      } catch (err) {
-        console.error('Erro ao buscar dados:', err);
-      }
+    const fetchDados = async (): Promise<void> => {
+      const [empresasRes, usuariosRes] = await Promise.all([
+        axios.get<Empresa[]>('http://localhost:3000/empresa', {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get<Usuario[]>('http://localhost:3000/users', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+
+      setEmpresas(empresasRes.data);
+      setUsuarios(usuariosRes.data);
     };
-    fetchDados();
+
+    if (token) fetchDados().catch(err => console.error(err));
   }, [token]);
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ): void => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setMensagem('');
 
@@ -49,7 +76,8 @@ export default function EmpresaForm() {
       await axios.post('http://localhost:3000/empresa', form, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      setMensagem('✅ Empresa cadastrada com sucesso!');
+
+      setMensagem('empresa cadastrada com sucesso!');
       setForm({
         nome: '',
         cnpj: '',
@@ -58,31 +86,37 @@ export default function EmpresaForm() {
         endereco: '',
         id_user: ''
       });
-      const response = await axios.get('http://localhost:3000/empresa', { headers: { Authorization: `Bearer ${token}` } });
+
+      const response = await axios.get<Empresa[]>(
+        'http://localhost:3000/empresa',
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
       setEmpresas(response.data);
-    } catch (err) {
-      console.error('Erro ao cadastrar empresa:', err);
-      setMensagem('❌ Erro ao cadastrar empresa.');
+    } catch {
+      setMensagem('erro ao cadastrar empresa.');
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: number): Promise<void> => {
     if (!window.confirm('Deseja realmente deletar esta empresa?')) return;
 
     try {
       await axios.delete(`http://localhost:3000/empresa/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+
       setMensagem('Empresa deletada com sucesso!');
-      setEmpresas(empresas.filter(e => e.id !== id));
-    } catch (err) {
-      console.error('Erro ao deletar empresa:', err);
+      setEmpresas(prev => prev.filter(e => e.id !== id));
+    } catch {
       setMensagem('Erro ao deletar empresa.');
     }
   };
 
   return (
     <div className="empresa-container">
+      <Navbar />
+
       <form className="empresa-form" onSubmit={handleSubmit}>
         <a href="/home" className="voltar">Voltar</a>
         <h2>Cadastrar Empresa</h2>
@@ -131,7 +165,7 @@ export default function EmpresaForm() {
                   <td>{e.telefone}</td>
                   <td>{e.email}</td>
                   <td>{e.endereco}</td>
-                  <td>{usuarios.find(u => u.id === e.id_user)?.nome || 'N/A'}</td>
+                  <td>{usuarios.find(u => u.id === e.id_user)?.nome ?? 'N/A'}</td>
                   <td>
                     <button
                       onClick={() => handleDelete(e.id)}

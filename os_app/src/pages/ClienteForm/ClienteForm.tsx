@@ -1,10 +1,32 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState, ChangeEvent, FormEvent } from 'react';
 import axios from 'axios';
-import Navbar from '../../components/Navbar/Navbar.js';
+import Navbar from '../../components/Navbar/Navbar';
 import './ClienteForm.css';
 
-export default function ClienteForm() {
-  const [form, setForm] = useState({
+interface ClienteFormData {
+  nome: string;
+  email: string;
+  telefone: string;
+  endereco: string;
+  id_empresa: string;
+}
+
+interface Cliente {
+  id: number;
+  nome: string;
+  email?: string;
+  telefone?: string;
+  endereco?: string;
+  id_empresa: number;
+}
+
+interface Empresa {
+  id: number;
+  nome: string;
+}
+
+export default function ClienteForm(): React.ReactElement {
+  const [form, setForm] = useState<ClienteFormData>({
     nome: '',
     email: '',
     telefone: '',
@@ -12,34 +34,38 @@ export default function ClienteForm() {
     id_empresa: ''
   });
 
-  const [mensagem, setMensagem] = useState('');
-  const [clientes, setClientes] = useState([]);
-  const [empresas, setEmpresas] = useState([]);
+  const [mensagem, setMensagem] = useState<string>('');
+  const [clientes, setClientes] = useState<Cliente[]>([]);
+  const [empresas, setEmpresas] = useState<Empresa[]>([]);
 
   const token = localStorage.getItem('token');
 
   useEffect(() => {
-    const fetchDados = async () => {
-      try {
-        const [clientesRes, empresasRes] = await Promise.all([
-          axios.get('http://localhost:3000/cliente', { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get('http://localhost:3000/empresa', { headers: { Authorization: `Bearer ${token}` } })
-        ]);
-        setClientes(clientesRes.data);
-        setEmpresas(empresasRes.data);
-      } catch (err) {
-        console.error('Erro ao buscar dados:', err);
-      }
+    const fetchDados = async (): Promise<void> => {
+      const [clientesRes, empresasRes] = await Promise.all([
+        axios.get<Cliente[]>('http://localhost:3000/cliente', {
+          headers: { Authorization: `Bearer ${token}` }
+        }),
+        axios.get<Empresa[]>('http://localhost:3000/empresa', {
+          headers: { Authorization: `Bearer ${token}` }
+        })
+      ]);
+
+      setClientes(clientesRes.data);
+      setEmpresas(empresasRes.data);
     };
-    fetchDados();
+
+    if (token) fetchDados().catch(err => console.error(err));
   }, [token]);
 
-  const handleChange = (e) => {
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ): void => {
     const { name, value } = e.target;
-    setForm({ ...form, [name]: value });
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setMensagem('');
 
@@ -47,6 +73,7 @@ export default function ClienteForm() {
       await axios.post('http://localhost:3000/cliente', form, {
         headers: { Authorization: `Bearer ${token}` }
       });
+
       setMensagem('✅ Cliente cadastrado com sucesso!');
       setForm({
         nome: '',
@@ -55,31 +82,37 @@ export default function ClienteForm() {
         endereco: '',
         id_empresa: ''
       });
-      const response = await axios.get('http://localhost:3000/cliente', { headers: { Authorization: `Bearer ${token}` } });
+
+      const response = await axios.get<Cliente[]>(
+        'http://localhost:3000/cliente',
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+
       setClientes(response.data);
-    } catch (err) {
-      console.error('Erro ao cadastrar cliente:', err);
+    } catch {
       setMensagem('❌ Erro ao cadastrar cliente.');
     }
   };
 
-  const handleDelete = async (id) => {
+  const handleDelete = async (id: number): Promise<void> => {
     if (!window.confirm('Deseja realmente deletar este cliente?')) return;
 
     try {
       await axios.delete(`http://localhost:3000/cliente/${id}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
+
       setMensagem('Cliente deletado com sucesso!');
-      setClientes(clientes.filter(c => c.id !== id));
-    } catch (err) {
-      console.error('Erro ao deletar cliente:', err);
+      setClientes(prev => prev.filter(c => c.id !== id));
+    } catch {
       setMensagem('Erro ao deletar cliente.');
     }
   };
 
   return (
     <div className="empresa-container">
+      <Navbar />
+
       <form className="empresa-form" onSubmit={handleSubmit}>
         <a href="/home" className="voltar">Voltar</a>
         <h2>Cadastrar Cliente</h2>
@@ -125,9 +158,11 @@ export default function ClienteForm() {
                   <td>{c.email}</td>
                   <td>{c.telefone}</td>
                   <td>{c.endereco}</td>
-                  <td>{empresas.find(e => e.id === c.id_empresa)?.nome || 'N/A'}</td>
+                  <td>{empresas.find(e => e.id === c.id_empresa)?.nome ?? 'N/A'}</td>
                   <td>
-                    <button onClick={() => handleDelete(c.id)} className="delete-btn">Deletar</button>
+                    <button onClick={() => handleDelete(c.id)} className="delete-btn">
+                      Deletar
+                    </button>
                   </td>
                 </tr>
               ))}
