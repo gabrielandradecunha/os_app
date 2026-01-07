@@ -50,8 +50,3 @@ node src/index.js
 cd os_app
 npm install
 npm run dev
-
-
-![alt text](imgs/empresas_form.png)
-![alt text](imgs/clientes_form.png)
-![alt text](imgs/cadastrar_os.png)
